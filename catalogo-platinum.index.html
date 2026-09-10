@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catálogo Platinum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0A1930;
+    --bg-deep: #071120;
+    --panel: #102A4C;
+    --panel-2: #14315A;
+    --line: #24466F;
+    --gold: #D4AF6A;
+    --gold-soft: #8E7440;
+    --text: #F4F7FB;
+    --text-muted: #93A9C8;
+    --ok: #6FCF97;
+    --warn: #E4A857;
+    --radius: 10px;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: radial-gradient(ellipse at top, #0E2140 0%, var(--bg) 45%, var(--bg-deep) 100%);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, sans-serif;
+    min-height: 100vh;
+    font-variant-numeric: tabular-nums;
+  }
+  h1,h2,h3{ font-family:'Space Grotesk', sans-serif; margin:0; }
+
+  /* ---------- header ---------- */
+  header{
+    padding: 40px 32px 28px;
+    border-bottom: 1px solid var(--line);
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap: 24px;
+  }
+  .brand{ display:flex; align-items:center; gap:14px; }
+  .brand-mark{
+    width:44px; height:44px;
+    border-radius:8px;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-soft) 100%);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700; font-size:19px; color: var(--bg-deep);
+    flex-shrink:0;
+  }
+  .brand h1{ font-size: 26px; font-weight:700; letter-spacing:-0.01em; }
+  .brand p{ margin:4px 0 0; color:var(--text-muted); font-size:14px; }
+
+  .import-actions{ display:flex; gap:12px; flex-wrap:wrap; }
+  .file-btn{
+    position:relative;
+    overflow:hidden;
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    background: var(--panel);
+    border:1px solid var(--line);
+    color: var(--text);
+    padding: 11px 18px;
+    border-radius: var(--radius);
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .file-btn:hover{ border-color: var(--gold-soft); background: var(--panel-2); }
+  .file-btn.loaded{ border-color: var(--ok); }
+  .file-btn input{
+    position:absolute; inset:0; opacity:0; cursor:pointer;
+  }
+  .dot{ width:7px; height:7px; border-radius:50%; background: var(--text-muted); flex-shrink:0; }
+  .file-btn.loaded .dot{ background: var(--ok); }
+
+  /* ---------- stats ---------- */
+  .stats{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+    gap: 1px;
+    background: var(--line);
+    margin: 0 32px;
+    border-radius: var(--radius);
+    overflow:hidden;
+    transform: translateY(-1px);
+  }
+  .stat{
+    background: var(--panel);
+    padding: 20px 22px;
+  }
+  .stat .value{ font-family:'Space Grotesk', sans-serif; font-size: 26px; font-weight:700; color: var(--gold); }
+  .stat .label{ font-size: 12.5px; color: var(--text-muted); margin-top:4px; }
+
+  /* ---------- toolbar ---------- */
+  .toolbar{
+    display:flex; gap:14px; align-items:center; flex-wrap:wrap;
+    padding: 28px 32px 14px;
+  }
+  .search{
+    flex:1; min-width:220px; position:relative;
+  }
+  .search input{
+    width:100%;
+    background: var(--panel);
+    border:1px solid var(--line);
+    color: var(--text);
+    padding: 12px 16px 12px 40px;
+    border-radius: var(--radius);
+    font-size:14.5px;
+    font-family:'Inter',sans-serif;
+  }
+  .search input::placeholder{ color: var(--text-muted); }
+  .search input:focus{ outline:none; border-color:var(--gold-soft); }
+  .search svg{ position:absolute; left:13px; top:50%; transform:translateY(-50%); opacity:.55; }
+
+  select{
+    background: var(--panel);
+    border:1px solid var(--line);
+    color: var(--text);
+    padding: 12px 14px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-family:'Inter',sans-serif;
+  }
+
+  /* ---------- table ---------- */
+  .table-wrap{ padding: 10px 32px 48px; overflow-x:auto; }
+  table{ width:100%; border-collapse: collapse; min-width:640px; }
+  thead th{
+    text-align:left;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    font-weight:600;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--line);
+    cursor:pointer;
+    user-select:none;
+    white-space:nowrap;
+  }
+  thead th:hover{ color: var(--text); }
+  thead th.num, tbody td.num{ text-align:right; }
+  tbody td{
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(36,70,111,0.45);
+    font-size: 14.5px;
+  }
+  tbody tr:hover{ background: rgba(255,255,255,0.025); }
+  .codigo{ color: var(--text-muted); font-size:13px; }
+  .qtd-pill{
+    display:inline-flex; align-items:center; gap:6px;
+    padding: 3px 10px; border-radius: 100px; font-size:13px; font-weight:600;
+  }
+  .qtd-pill.zero{ background: rgba(228,168,87,0.12); color: var(--warn); }
+  .qtd-pill.ok{ background: rgba(111,207,151,0.12); color: var(--ok); }
+  .preco{ font-weight:600; color: var(--gold); white-space:nowrap; }
+  .empty-state{
+    text-align:center; padding: 90px 20px; color: var(--text-muted);
+  }
+  .empty-state h3{ color: var(--text); font-size:19px; margin-bottom:8px; }
+  .empty-state p{ font-size:14px; max-width:420px; margin:0 auto; line-height:1.6; }
+
+  footer{
+    padding: 20px 32px 36px;
+    color: var(--text-muted);
+    font-size: 12.5px;
+    text-align:center;
+  }
+
+  @media (max-width: 640px){
+    header{ padding: 28px 18px 20px; }
+    .stats{ margin: 0 18px; grid-template-columns: 1fr 1fr; }
+    .toolbar, .table-wrap, footer{ padding-left:18px; padding-right:18px; }
+    .brand h1{ font-size:21px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark">P</div>
+    <div>
+      <h1>Catálogo Platinum</h1>
+      <p id="lastUpdate">Nenhum dado importado ainda</p>
+    </div>
+  </div>
+  <div class="import-actions">
+    <label class="file-btn" id="btnEstoque">
+      <span class="dot"></span>
+      <span id="lblEstoque">Importar Estoque (Saldo)</span>
+      <input type="file" id="fileEstoque" accept=".xls,.html,.htm">
+    </label>
+    <label class="file-btn" id="btnPrecos">
+      <span class="dot"></span>
+      <span id="lblPrecos">Importar Lista de Preços</span>
+      <input type="file" id="filePrecos" accept=".xls,.html,.htm">
+    </label>
+  </div>
+</header>
+
+<div class="stats">
+  <div class="stat"><div class="value" id="statTotal">0</div><div class="label">Produtos no catálogo</div></div>
+  <div class="stat"><div class="value" id="statComEstoque">0</div><div class="label">Com estoque disponível</div></div>
+  <div class="stat"><div class="value" id="statSemEstoque">0</div><div class="label">Sem estoque</div></div>
+  <div class="stat"><div class="value" id="statValor">R$ 0</div><div class="label">Valor total em estoque (Platinum)</div></div>
+</div>
+
+<div class="toolbar">
+  <div class="search">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#93A9C8" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    <input type="text" id="searchInput" placeholder="Buscar por código ou nome do produto…">
+  </div>
+  <select id="filterEstoque">
+    <option value="todos">Todos os produtos</option>
+    <option value="com">Somente com estoque</option>
+    <option value="sem">Somente sem estoque</option>
+  </select>
+</div>
+
+<div class="table-wrap" id="tableWrap">
+  <div class="empty-state">
+    <h3>Importe as duas planilhas para começar</h3>
+    <p>Use os botões acima para importar o arquivo de <strong>Saldo/Estoque</strong> e o de <strong>Lista de Preços</strong>. O catálogo é montado automaticamente cruzando os produtos pelo código.</p>
+  </div>
+</div>
+
+<footer>Os dados ficam apenas nesta página, no seu navegador — para atualizar, importe novos arquivos exportados do sistema.</footer>
+
+<script>
+let estoqueMap = null; // codigo -> { nome, saldo }
+let precosMap  = null; // codigo -> { descricao, preco }
+let sortState  = { col: 'codigo', dir: 1 };
+
+function parseNumeroBR(txt){
+  if (!txt) return 0;
+  txt = txt.trim();
+  if (txt === '-' || txt === '') return 0;
+  txt = txt.replace(/\./g, '').replace(',', '.');
+  const n = parseFloat(txt);
+  return isNaN(n) ? 0 : n;
+}
+
+function formatMoeda(n){
+  return 'R$ ' + n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function formatQtd(n){
+  return n.toLocaleString('pt-BR');
+}
+
+// ---------- parsing dos arquivos exportados (HTML disfarçado de .xls) ----------
+
+function parseEstoque(htmlText){
+  const doc = new DOMParser().parseFromString(htmlText, 'text/html');
+  const map = {};
+  const rows = doc.querySelectorAll('table tr');
+  rows.forEach(tr => {
+    const cells = Array.from(tr.querySelectorAll('td,th')).map(td => td.textContent.trim());
+    // linha válida: primeira célula é um código numérico e existem pelo menos 10 colunas
+    if (cells.length >= 10 && /^\d+$/.test(cells[0])) {
+      const codigo = cells[0];
+      const nome = cells[1];
+      const saldo = parseNumeroBR(cells[cells.length - 1]);
+      map[codigo] = { nome, saldo };
+    }
+  });
+  return map;
+}
+
+function parsePrecos(htmlText){
+  const doc = new DOMParser().parseFromString(htmlText, 'text/html');
+  const map = {};
+  const rows = doc.querySelectorAll('table tr');
+  rows.forEach(tr => {
+    const cells = Array.from(tr.querySelectorAll('td,th')).map(td => td.textContent.trim());
+    if (cells.length === 10 && /^\d+$/.test(cells[0])) {
+      const codigo = cells[0];
+      const descricao = cells[1];
+      const preco = parseNumeroBR(cells[9]); // Preço Venda 6 - PLATINUM
+      map[codigo] = { descricao, preco };
+    }
+  });
+  return map;
+}
+
+function marcarBotaoCarregado(btnId, lblId, texto){
+  document.getElementById(btnId).classList.add('loaded');
+  document.getElementById(lblId).textContent = texto;
+}
+
+document.getElementById('fileEstoque').addEventListener('change', function(e){
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt){
+    estoqueMap = parseEstoque(evt.target.result);
+    marcarBotaoCarregado('btnEstoque', 'lblEstoque', 'Estoque: ' + file.name);
+    render();
+  };
+  reader.readAsText(file, 'UTF-8');
+});
+
+document.getElementById('filePrecos').addEventListener('change', function(e){
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt){
+    precosMap = parsePrecos(evt.target.result);
+    marcarBotaoCarregado('btnPrecos', 'lblPrecos', 'Preços: ' + file.name);
+    render();
+  };
+  reader.readAsText(file, 'UTF-8');
+});
+
+document.getElementById('searchInput').addEventListener('input', render);
+document.getElementById('filterEstoque').addEventListener('change', render);
+
+function getCatalogo(){
+  if (!estoqueMap && !precosMap) return [];
+  const codigos = new Set([
+    ...Object.keys(estoqueMap || {}),
+    ...Object.keys(precosMap || {})
+  ]);
+  const linhas = [];
+  codigos.forEach(codigo => {
+    const est = (estoqueMap || {})[codigo];
+    const prc = (precosMap || {})[codigo];
+    linhas.push({
+      codigo,
+      nome: (prc && prc.descricao) || (est && est.nome) || '—',
+      saldo: est ? est.saldo : 0,
+      preco: prc ? prc.preco : 0
+    });
+  });
+  return linhas;
+}
+
+function render(){
+  const wrap = document.getElementById('tableWrap');
+  const dados = getCatalogo();
+
+  if (dados.length === 0) return; // mantém o empty state
+
+  // stats
+  const comEstoque = dados.filter(d => d.saldo > 0);
+  const semEstoque = dados.filter(d => d.saldo <= 0);
+  const valorTotal = comEstoque.reduce((acc, d) => acc + d.saldo * d.preco, 0);
+
+  document.getElementById('statTotal').textContent = formatQtd(dados.length);
+  document.getElementById('statComEstoque').textContent = formatQtd(comEstoque.length);
+  document.getElementById('statSemEstoque').textContent = formatQtd(semEstoque.length);
+  document.getElementById('statValor').textContent = formatMoeda(valorTotal);
+  document.getElementById('lastUpdate').textContent = 'Atualizado agora · ' + new Date().toLocaleString('pt-BR');
+
+  // filtro + busca
+  const termo = document.getElementById('searchInput').value.trim().toLowerCase();
+  const filtro = document.getElementById('filterEstoque').value;
+
+  let filtrado = dados.filter(d => {
+    if (termo && !(d.codigo.includes(termo) || d.nome.toLowerCase().includes(termo))) return false;
+    if (filtro === 'com' && d.saldo <= 0) return false;
+    if (filtro === 'sem' && d.saldo > 0) return false;
+    return true;
+  });
+
+  // ordenação
+  filtrado.sort((a, b) => {
+    let va = a[sortState.col], vb = b[sortState.col];
+    if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
+    if (va < vb) return -1 * sortState.dir;
+    if (va > vb) return 1 * sortState.dir;
+    return 0;
+  });
+
+  if (filtrado.length === 0) {
+    wrap.innerHTML = '<div class="empty-state"><h3>Nenhum produto encontrado</h3><p>Ajuste a busca ou o filtro para ver outros itens do catálogo.</p></div>';
+    return;
+  }
+
+  const rowsHtml = filtrado.map(d => `
+    <tr>
+      <td class="codigo">${d.codigo}</td>
+      <td>${d.nome}</td>
+      <td class="num"><span class="qtd-pill ${d.saldo > 0 ? 'ok' : 'zero'}">${formatQtd(d.saldo)}</span></td>
+      <td class="num preco">${formatMoeda(d.preco)}</td>
+    </tr>
+  `).join('');
+
+  wrap.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th data-col="codigo">Código</th>
+          <th data-col="nome">Produto</th>
+          <th class="num" data-col="saldo">Estoque</th>
+          <th class="num" data-col="preco">Preço Platinum</th>
+        </tr>
+      </thead>
+      <tbody>${rowsHtml}</tbody>
+    </table>
+  `;
+
+  wrap.querySelectorAll('thead th').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.col;
+      sortState.dir = (sortState.col === col) ? sortState.dir * -1 : 1;
+      sortState.col = col;
+      render();
+    });
+  });
+}
+</script>
+</body>
+</html>
